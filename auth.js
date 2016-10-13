@@ -4,7 +4,7 @@ var Bravia = require('./bravia');
 
 var bravia = new Bravia();
 
-bravia.auth().then(function(response) {
+bravia.authenticate().then(function(response) {
   if (response.statusCode == 200) {
     console.log('Already registered!');
     console.log(response.headers);
@@ -18,7 +18,7 @@ bravia.auth().then(function(response) {
     });
 
     rl.question('Please enter the 4-digit code shown on your TV: ', function(code) {
-      bravia.auth(code).then(function(response) {
+      bravia.authenticate(code).then(function(response) {
         if (response.statusCode == 200) {
           console.log('Registered!');
           console.log(response.headers);
