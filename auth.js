@@ -7,7 +7,7 @@ var bravia = new Bravia();
 bravia.authenticate().then(function(response) {
   if (response.statusCode == 200) {
     console.log('Already registered!');
-    console.log(response.headers);
+    console.log(bravia.auth.parseCookie(response.headers));
     return;
   }
 
@@ -21,7 +21,7 @@ bravia.authenticate().then(function(response) {
       bravia.authenticate(code).then(function(response) {
         if (response.statusCode == 200) {
           console.log('Registered!');
-          console.log(response.headers);
+          console.log(bravia.auth.parseCookie(response.headers));
         } else {
           console.log('Unexpected '+response.statusCode+' response');
         }

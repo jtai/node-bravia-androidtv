@@ -21,6 +21,10 @@ BraviaAuth.prototype.authenticate = function(code) {
   return deferred.promise;
 };
 
+BraviaAuth.prototype.parseCookie = function(headers) {
+  return headers['set-cookie'][0];
+};
+
 function authRequest(url, clientId, nickname, code) {
   var deferred = Q.defer();
 
