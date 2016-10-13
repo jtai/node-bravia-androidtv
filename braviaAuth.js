@@ -3,10 +3,12 @@ var Q = require('q');
 var StringFormat = require('string-format');
 var BraviaDiscovery = require('./braviaDiscovery');
 
+const os = require('os');
+
 function BraviaAuth(discovery) {
   this.discovery = discovery;
-  this.clientId = '{ip}:642a76ca-9102-11e6-ae22-56b6b6499611';
-  this.nickname = 'node-bravia-androidtv';
+  this.clientId = '{hostname}:642a76ca-9102-11e6-ae22-56b6b6499611';
+  this.nickname = 'node-bravia-androidtv ({hostname})';
 }
 
 BraviaAuth.prototype.authenticate = function(code) {
@@ -14,7 +16,9 @@ BraviaAuth.prototype.authenticate = function(code) {
 
   var self = this;
   this.discovery.getUrl().then(function(url) {
-    authRequest(url, self.clientId.format({ip: self.discovery.ip}), self.nickname, code)
+    var clientId = self.clientId.format({hostname: hostname()});
+    var nickname = self.nickname.format({hostname: os.hostname()});
+    authRequest(url, clientId, nickname, code)
       .then(deferred.resolve, deferred.reject);
   }, deferred.reject);
 
@@ -64,6 +68,13 @@ function authRequest(url, clientId, nickname, code) {
   });
 
   return deferred.promise;
+}
+
+function hostname() {
+  os.hostname()
+    .toLowerCase()
+    .replace(/\..*$/, '')
+    .replace(/[^a-z0-9]/g, '');
 }
 
 module.exports = BraviaAuth;
