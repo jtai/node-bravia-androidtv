@@ -1,0 +1,23 @@
+{
+  "name": "node-bravia-androidtv",
+  "version": "0.0.1",
+  "description": "Node.js module for controlling Sony BRAVIA TV running Android TV",
+  "main": "bravia.js",
+  "dependencies": {
+    "string-format": "0.2.1",
+    "request": "2.47.0",
+    "q": "1.0.1",
+    "node-ssdp": "2.8.0"
+  },
+  "scripts": {
+    "lint" : "jshint . --exclude node_modules",
+    "unit" : "mocha",
+    "test": "npm run unit"
+  },
+  "author": "Jon Tai",
+  "license": "MIT",
+  "repository" : {
+    "type" : "git",
+    "url" : "http://github.com/jtai/node-bravia-androidtv.git"
+  }
+}
