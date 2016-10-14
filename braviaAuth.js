@@ -10,7 +10,7 @@ function BraviaAuth(discovery) {
   this.nickname = 'node-bravia-androidtv ({hostname})';
 }
 
-BraviaAuth.prototype.authenticate = function(code) {
+BraviaAuth.prototype.getCookie = function(code) {
   var deferred = Q.defer();
 
   if (this.cookie) {

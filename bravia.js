@@ -14,7 +14,7 @@ Bravia.prototype.discover = function() {
 };
 
 Bravia.prototype.authenticate = function(code) {
-  return this.auth.authenticate(code);
+  return this.auth.getCookie(code);
 }
 
 module.exports = Bravia;
