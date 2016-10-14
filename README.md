@@ -17,3 +17,12 @@ this client by running
 > node auth.js
 
 From then on the authentication cookie handling is done for you.
+
+List supported commands (and their codes) by running
+
+> node command.js
+
+To send a command (e.g., `PowerOff`), run
+
+> node command.js PowerOff
+
