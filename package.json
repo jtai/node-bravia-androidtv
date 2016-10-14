@@ -9,11 +9,6 @@
     "q": "1.0.1",
     "node-ssdp": "2.8.0"
   },
-  "scripts": {
-    "lint" : "jshint . --exclude node_modules",
-    "unit" : "mocha",
-    "test": "npm run unit"
-  },
   "author": "Jon Tai",
   "license": "MIT",
   "repository" : {
