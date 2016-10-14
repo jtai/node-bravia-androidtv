@@ -14,20 +14,36 @@ function BraviaAuth(discovery) {
 BraviaAuth.prototype.authenticate = function(code) {
   var deferred = Q.defer();
 
-  var self = this;
-  this.discovery.getUrl().then(function(url) {
-    var clientId = self.clientId.format({hostname: hostname()});
-    var nickname = self.nickname.format({hostname: os.hostname()});
-    authRequest(url, clientId, nickname, code)
-      .then(deferred.resolve, deferred.reject);
-  }, deferred.reject);
+  if (this.cookie) {
+    deferred.resolve(this.cookie);
+  } else {
+    var self = this;
+    this.discovery.getUrl().then(function(url) {
+      var clientId = self.clientId.format({hostname: hostname()});
+      var nickname = self.nickname.format({hostname: os.hostname()});
+      authRequest(url, clientId, nickname, code).then(function(response) {
+        if (response.statusCode == 200) {
+          var cookie = parseCookie(response.headers);
+          self.cookie = cookie;
+          deferred.resolve(cookie);
+        } else if (response.statusCode == 401) {
+          deferred.resolve();
+        } else {
+          deferred.reject('Unexpected '+response.statusCode+' response');
+        }
+      }, deferred.reject);
+    }, deferred.reject);
+  }
 
   return deferred.promise;
 };
 
-BraviaAuth.prototype.parseCookie = function(headers) {
-  return headers['set-cookie'][0];
-};
+function hostname() {
+  os.hostname()
+    .toLowerCase()
+    .replace(/\..*$/, '')
+    .replace(/[^a-z0-9]/g, '');
+}
 
 function authRequest(url, clientId, nickname, code) {
   var deferred = Q.defer();
@@ -70,11 +86,8 @@ function authRequest(url, clientId, nickname, code) {
   return deferred.promise;
 }
 
-function hostname() {
-  os.hostname()
-    .toLowerCase()
-    .replace(/\..*$/, '')
-    .replace(/[^a-z0-9]/g, '');
-}
+function parseCookie(headers) {
+  return headers['set-cookie'][0].split(';')[0];
+};
 
 module.exports = BraviaAuth;

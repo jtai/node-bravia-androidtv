@@ -4,26 +4,21 @@ var Bravia = require('./bravia');
 
 var bravia = new Bravia();
 
-bravia.authenticate().then(function(response) {
-  if (response.statusCode == 200) {
-    console.log('Already registered!');
-    console.log(bravia.auth.parseCookie(response.headers));
-    return;
-  }
-
-  if (response.statusCode == 401) {
+bravia.authenticate().then(function(cookie) {
+  if (cookie) {
+    console.log(cookie);
+  } else {
     var rl = readline.createInterface({
       input: process.stdin,
       output: process.stdout
     });
 
     rl.question('Please enter the 4-digit code shown on your TV: ', function(code) {
-      bravia.authenticate(code).then(function(response) {
-        if (response.statusCode == 200) {
-          console.log('Registered!');
-          console.log(bravia.auth.parseCookie(response.headers));
+      bravia.authenticate(code).then(function(cookie) {
+        if (cookie) {
+          console.log(cookie);
         } else {
-          console.log('Unexpected '+response.statusCode+' response');
+          console.log('Registration failed');
         }
       }, function(error) {
         console.log(error);
@@ -31,10 +26,7 @@ bravia.authenticate().then(function(response) {
 
       rl.close();
     });
-    return;
   }
-
-  console.log('Unexpected '+response.statusCode+' response');
 }, function(error) {
   console.log(error);
 });
