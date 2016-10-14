@@ -1,4 +1,3 @@
-var Q = require('q');
 var readline = require('readline');
 var Bravia = require('./bravia');
 

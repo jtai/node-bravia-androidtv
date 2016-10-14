@@ -1,7 +1,6 @@
 var Request = require('request');
 var Q = require('q');
 var StringFormat = require('string-format');
-var BraviaDiscovery = require('./braviaDiscovery');
 
 const os = require('os');
 

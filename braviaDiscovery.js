@@ -1,6 +1,5 @@
 var SsdpClient = require('node-ssdp').Client;
 var Q = require('q');
-var Request = require('request');
 var StringFormat = require('string-format');
 
 function BraviaDiscovery(ip){
