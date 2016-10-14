@@ -37,6 +37,10 @@ BraviaAuth.prototype.getCookie = function(code) {
   return deferred.promise;
 };
 
+BraviaAuth.prototype.clearCookie = function() {
+  this.cookie = null;
+};
+
 function hostname() {
   os.hostname()
     .toLowerCase()

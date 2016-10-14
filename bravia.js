@@ -26,7 +26,7 @@ Bravia.prototype.getCommands = function() {
     var self = this;
     this.discovery.getUrl().then(function(url) {
       self.auth.getCookie().then(function(cookie) {
-        getRemoteControllerInfo(url, cookie).then(function(response) {
+        getRemoteControllerInfo(url, cookie, self.auth).then(function(response) {
           if (response && response.result !== undefined) {
             var commands = parseCommands(response);
             self.commands = commands;
@@ -50,7 +50,8 @@ Bravia.prototype.sendCommand = function(command) {
     self.discovery.getUrl().then(function(url) {
       self.auth.getCookie().then(function(cookie) {
         var code = commands[command];
-        sendCommandCode(url, cookie, code).then(deferred.resolve, deferred.reject);
+        sendCommandCode(url, cookie, code, self.auth)
+          .then(deferred.resolve, deferred.reject);
       }, deferred.reject);
     }, deferred.reject);
   }, deferred.reject);
@@ -58,7 +59,7 @@ Bravia.prototype.sendCommand = function(command) {
   return deferred.promise;
 };
 
-function getRemoteControllerInfo(url, cookie) {
+function getRemoteControllerInfo(url, cookie, auth) {
   var deferred = Q.defer();
 
   Request.post({
@@ -74,9 +75,16 @@ function getRemoteControllerInfo(url, cookie) {
       'Cookie': cookie
     }
   }, function (error, response, body) {
-    if (!error && response.statusCode == 200) {
-      deferred.resolve(body);
-    } else{
+    if (!error) {
+      if (response.statusCode == 200) {
+        deferred.resolve(body);
+      } else if (response.statusCode == 403) {
+        auth.clearCookie();
+        deferred.reject(error);
+      } else {
+        deferred.reject(error);
+      }
+    } else {
       deferred.reject(error);
     }
   });
@@ -91,7 +99,7 @@ function parseCommands(response) {
   }, {});
 }
 
-function sendCommandCode(url, cookie, code) {
+function sendCommandCode(url, cookie, code, auth) {
   var deferred = Q.defer();
 
   var body = '<?xml version="1.0"?>' +
@@ -113,9 +121,16 @@ function sendCommandCode(url, cookie, code) {
       'Cookie': cookie
     }
   }, function (error, response, body) {
-    if (!error && response.statusCode == 200) {
-      deferred.resolve();
-    } else{
+    if (!error) {
+      if (response.statusCode == 200) {
+        deferred.resolve();
+      } else if (response.statusCode == 403) {
+        auth.clearCookie();
+        deferred.reject(error);
+      } else {
+        deferred.reject(error);
+      }
+    } else {
       deferred.reject(error);
     }
   });
