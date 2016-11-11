@@ -59,6 +59,20 @@ Bravia.prototype.sendCommand = function(command) {
   return deferred.promise;
 };
 
+Bravia.prototype.getStatus = function() {
+  var deferred = Q.defer();
+
+  var self = this;
+  this.discovery.getUrl().then(function(url) {
+    self.auth.getCookie().then(function(cookie) {
+      getPlayingContentInfo(url, cookie, self.auth)
+        .then(deferred.resolve, deferred.reject);
+    }, deferred.reject);
+  }, deferred.reject);
+
+  return deferred.promise;
+};
+
 function getRemoteControllerInfo(url, cookie, auth) {
   var deferred = Q.defer();
 
@@ -124,6 +138,39 @@ function sendCommandCode(url, cookie, code, auth) {
     if (!error) {
       if (response.statusCode == 200) {
         deferred.resolve();
+      } else if (response.statusCode == 403) {
+        auth.clearCookie();
+        deferred.reject(error);
+      } else {
+        deferred.reject(error);
+      }
+    } else {
+      deferred.reject(error);
+    }
+  });
+
+  return deferred.promise;
+}
+
+function getPlayingContentInfo(url, cookie, auth) {
+  var deferred = Q.defer();
+
+  Request.post({
+    method: 'POST',
+    uri: url + '/avContent',
+    json: {
+      'id': 3,
+      'method': 'getPlayingContentInfo',
+      'version': '1.0',
+      'params': []
+    },
+    headers: {
+      'Cookie': cookie
+    }
+  }, function (error, response, body) {
+    if (!error) {
+      if (response.statusCode == 200) {
+        deferred.resolve(body);
       } else if (response.statusCode == 403) {
         auth.clearCookie();
         deferred.reject(error);
