@@ -23,8 +23,13 @@ Bravia.prototype.getPowerStatus = function() {
   var self = this;
   this.discovery.getUrl().then(function(url) {
     self.auth.getCookie().then(function(cookie) {
-      getPowerStatus(url, cookie, self.auth)
-        .then(deferred.resolve, deferred.reject);
+      getPowerStatus(url, cookie, self.auth).then(function(response) {
+        if (response.result !== undefined) {
+          deferred.resolve(response.result[0].status);
+        } else {
+          deferred.reject(response.error);
+        }
+      }, deferred.reject);
     }, deferred.reject);
   }, deferred.reject);
 
@@ -37,8 +42,13 @@ Bravia.prototype.getPlayingContentInfo = function() {
   var self = this;
   this.discovery.getUrl().then(function(url) {
     self.auth.getCookie().then(function(cookie) {
-      getPlayingContentInfo(url, cookie, self.auth)
-        .then(deferred.resolve, deferred.reject);
+      getPlayingContentInfo(url, cookie, self.auth).then(function(response) {
+        if (response.result !== undefined) {
+          deferred.resolve(response.result[0]);
+        } else {
+          deferred.reject(response.error);
+        }
+      }, deferred.reject);
     }, deferred.reject);
   }, deferred.reject);
 

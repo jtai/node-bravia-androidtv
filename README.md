@@ -5,6 +5,7 @@ Node.js module for controlling Sony BRAVIA Android TV (tested with KDL65W850C)
 
 The code is inspired by [alanreid/bravia](https://github.com/alanreid/bravia)
 and borrows structure from [ttu/node-yamaha-avr](https://github.com/ttu/node-yamaha-avr).
+Support for additional status commands inspired by [aparraga/braviarc](https://github.com/aparraga/braviarc).
 
 Note that this model does not support Wake-On-LAN for power on, you send it a
 `WakeUP` command over HTTP instead. Thanks to Michael Tout on this
@@ -21,6 +22,27 @@ this client by running
 
 From then on the authentication cookie handling is done for you.
 
+Status
+------
+
+Query the current power of the TV by running
+
+> node status.js
+
+The result should be `active` or `standby`.
+
+Query the playing content info by running
+
+> node status.js playing
+
+The result should be something like
+
+```js
+{ uri: 'extInput:hdmi?port=4',
+  source: 'extInput:hdmi',
+  title: 'HDMI 4/ARC' }
+```
+
 Commands
 --------
 
@@ -31,26 +53,3 @@ List supported commands (and their codes) by running
 To send a command (e.g., `PowerOff`), run
 
 > node command.js PowerOff
-
-Status
-------
-
-Query the current power and input status of the TV by running
-
-> node status.js
-
-If the TV is off, you will get a result like
-
-```js
-{ error: [ 40005, 'Display Is Turned off' ], id: 3 }
-```
-
-Otherwise you will get a result like
-
-```js
-{ result:
-   [ { uri: 'extInput:hdmi?port=4',
-       source: 'extInput:hdmi',
-       title: 'HDMI 4/ARC' } ],
-  id: 3 }
-```
