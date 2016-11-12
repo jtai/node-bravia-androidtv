@@ -17,6 +17,34 @@ Bravia.prototype.authenticate = function(code) {
   return this.auth.getCookie(code);
 };
 
+Bravia.prototype.getPowerStatus = function() {
+  var deferred = Q.defer();
+
+  var self = this;
+  this.discovery.getUrl().then(function(url) {
+    self.auth.getCookie().then(function(cookie) {
+      getPowerStatus(url, cookie, self.auth)
+        .then(deferred.resolve, deferred.reject);
+    }, deferred.reject);
+  }, deferred.reject);
+
+  return deferred.promise;
+};
+
+Bravia.prototype.getPlayingContentInfo = function() {
+  var deferred = Q.defer();
+
+  var self = this;
+  this.discovery.getUrl().then(function(url) {
+    self.auth.getCookie().then(function(cookie) {
+      getPlayingContentInfo(url, cookie, self.auth)
+        .then(deferred.resolve, deferred.reject);
+    }, deferred.reject);
+  }, deferred.reject);
+
+  return deferred.promise;
+};
+
 Bravia.prototype.getCommands = function() {
   var deferred = Q.defer();
 
@@ -61,51 +89,37 @@ Bravia.prototype.sendCommand = function(command) {
   return deferred.promise;
 };
 
-Bravia.prototype.getStatus = function() {
-  var deferred = Q.defer();
+function getPowerStatus(url, cookie, auth) {
+  var json = {
+   'id': 2,
+   'method': 'getPowerStatus',
+   'version': '1.0',
+   'params': []
+  };
 
-  var self = this;
-  this.discovery.getUrl().then(function(url) {
-    self.auth.getCookie().then(function(cookie) {
-      getPlayingContentInfo(url, cookie, self.auth)
-        .then(deferred.resolve, deferred.reject);
-    }, deferred.reject);
-  }, deferred.reject);
+  return jsonRequest(url + '/system', json, cookie, auth);
+}
 
-  return deferred.promise;
-};
+function getPlayingContentInfo(url, cookie, auth) {
+  var json = {
+   'id': 2,
+   'method': 'getPlayingContentInfo',
+   'version': '1.0',
+   'params': []
+  };
+
+  return jsonRequest(url + '/avContent', json, cookie, auth);
+}
 
 function getRemoteControllerInfo(url, cookie, auth) {
-  var deferred = Q.defer();
+  var json = {
+   'id': 2,
+   'method': 'getRemoteControllerInfo',
+   'version': '1.0',
+   'params': []
+  };
 
-  Request.post({
-    method: 'POST',
-    uri: url + '/system',
-    json: {
-      'id': 2,
-      'method': 'getRemoteControllerInfo',
-      'version': '1.0',
-      'params': []
-    },
-    headers: {
-      'Cookie': cookie
-    }
-  }, function (error, response, body) {
-    if (!error) {
-      if (response.statusCode == 200) {
-        deferred.resolve(body);
-      } else if (response.statusCode == 403) {
-        auth.clearCookie();
-        deferred.reject(error);
-      } else {
-        deferred.reject(error);
-      }
-    } else {
-      deferred.reject(error);
-    }
-  });
-
-  return deferred.promise;
+  return jsonRequest(url + '/system', json, cookie, auth);
 }
 
 function sendCommandCode(url, cookie, code, auth) {
@@ -147,18 +161,13 @@ function sendCommandCode(url, cookie, code, auth) {
   return deferred.promise;
 }
 
-function getPlayingContentInfo(url, cookie, auth) {
+function jsonRequest(url, json, cookie, auth) {
   var deferred = Q.defer();
 
   Request.post({
     method: 'POST',
-    uri: url + '/avContent',
-    json: {
-      'id': 3,
-      'method': 'getPlayingContentInfo',
-      'version': '1.0',
-      'params': []
-    },
+    uri: url,
+    json: json,
     headers: {
       'Cookie': cookie
     }
