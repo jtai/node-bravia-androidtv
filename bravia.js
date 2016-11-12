@@ -28,9 +28,11 @@ Bravia.prototype.getCommands = function() {
       self.auth.getCookie().then(function(cookie) {
         getRemoteControllerInfo(url, cookie, self.auth).then(function(response) {
           if (response && response.result !== undefined) {
-            var commands = parseCommands(response);
-            self.commands = commands;
-            deferred.resolve(commands);
+            self.commands = response.result[1].reduce(function(commands, command) {
+              commands[command.name] = command.value;
+              return commands;
+            }, {});
+            deferred.resolve(self.commands);
           } else {
             deferred.reject('Unexpected response: '+JSON.stringify(response));
           }
@@ -104,13 +106,6 @@ function getRemoteControllerInfo(url, cookie, auth) {
   });
 
   return deferred.promise;
-}
-
-function parseCommands(response) {
-  return response.result[1].reduce(function(commands, command) {
-    commands[command.name] = command.value;
-    return commands;
-  }, {});
 }
 
 function sendCommandCode(url, cookie, code, auth) {
