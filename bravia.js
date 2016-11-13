@@ -4,8 +4,8 @@ var StringFormat = require('string-format');
 var BraviaDiscovery = require('./braviaDiscovery');
 var BraviaAuth = require('./braviaAuth');
 
-function Bravia(ip) {
-  this.discovery = new BraviaDiscovery(ip);
+function Bravia(ip, filter) {
+  this.discovery = new BraviaDiscovery(ip, filter);
   this.auth = new BraviaAuth(this.discovery);
 }
 

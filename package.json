@@ -7,6 +7,7 @@
     "string-format": "0.2.1",
     "request": "2.47.0",
     "q": "1.0.1",
+    "xml2js": "0.4.4",
     "node-ssdp": "2.8.0"
   },
   "author": "Jon Tai",
