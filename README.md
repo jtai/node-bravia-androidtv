@@ -43,6 +43,20 @@ The result should be something like
   title: 'HDMI 4/ARC' }
 ```
 
+Query the current volume info by running
+
+> node status.js volume
+
+The result should be something like
+
+```js
+{ target: 'speaker',
+  volume: 5,
+  mute: false,
+  maxVolume: 100,
+  minVolume: 0 }
+```
+
 Commands
 --------
 

@@ -55,6 +55,27 @@ Bravia.prototype.getPlayingContentInfo = function() {
   return deferred.promise;
 };
 
+Bravia.prototype.getVolumeInformation = function() {
+  var deferred = Q.defer();
+
+  var self = this;
+  this.discovery.getUrl().then(function(url) {
+    self.auth.getCookie().then(function(cookie) {
+      getVolumeInformation(url, cookie, self.auth).then(function(response) {
+        if (response.result !== undefined) {
+          deferred.resolve(response.result[0].find(function(info) {
+            return info.target == 'speaker';
+          }));
+        } else {
+          deferred.reject(response.error);
+        }
+      }, deferred.reject);
+    }, deferred.reject);
+  }, deferred.reject);
+
+  return deferred.promise;
+};
+
 Bravia.prototype.getCommands = function() {
   var deferred = Q.defer();
 
@@ -119,6 +140,17 @@ function getPlayingContentInfo(url, cookie, auth) {
   };
 
   return jsonRequest(url + '/avContent', json, cookie, auth);
+}
+
+function getVolumeInformation(url, cookie, auth) {
+  var json = {
+   'id': 2,
+   'method': 'getVolumeInformation',
+   'version': '1.0',
+   'params': []
+  };
+
+  return jsonRequest(url + '/audio', json, cookie, auth);
 }
 
 function getRemoteControllerInfo(url, cookie, auth) {
