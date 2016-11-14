@@ -180,7 +180,7 @@ function setAudioVolume(url, cookie, volume, auth) {
    'params': [
      {
        'target': 'speaker',
-       'volume': volume
+       'volume': volume.toString()
      }
    ]
   };
