@@ -52,7 +52,7 @@ BraviaDiscovery.prototype.getIp = function(){
     this.timer = setTimeout(function(){
       deferred.reject("Discovery timeout");
       self.ssdpClient.stop();
-    }, 3000);
+    }, 4000);
   }
 
   return deferred.promise;
