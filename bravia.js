@@ -67,6 +67,33 @@ Bravia.prototype.getPowerSavingMode = function() {
   return deferred.promise;
 };
 
+Bravia.prototype.setPowerSavingMode = function(mode) {
+  var deferred = Q.defer();
+
+  var self = this;
+  this.discovery.getUrl().then(function(url) {
+    self.auth.getCookie().then(function(cookie) {
+      var json = {
+       'id': 2,
+       'method': 'setPowerSavingMode',
+       'version': '1.0',
+       'params': [{
+         'mode': mode // "off" (for display on) or "pictureOff" (for display off)
+       }]
+      };
+      jsonRequest(url + '/system', json, cookie, self.auth).then(function(response) {
+        if (response.result !== undefined) {
+          deferred.resolve();
+        } else {
+          deferred.reject(response.error);
+        }
+      }, deferred.reject);
+    }, deferred.reject);
+  }, deferred.reject);
+
+  return deferred.promise;
+};
+
 Bravia.prototype.getPlayingContentInfo = function() {
   var deferred = Q.defer();
 
