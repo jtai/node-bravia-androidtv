@@ -9,6 +9,8 @@ if (process.argv[2] == 'playing') {
   deferred = bravia.getApplicationList();
 } else if (process.argv[2] == 'volume') {
   deferred = bravia.getVolumeInformation();
+} else if (process.argv[2] == 'display') {
+  deferred = bravia.getPowerSavingMode();
 } else {
   deferred = bravia.getPowerStatus();
 }
