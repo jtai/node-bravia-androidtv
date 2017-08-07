@@ -67,6 +67,58 @@ Bravia.prototype.getPlayingContentInfo = function() {
   return deferred.promise;
 };
 
+Bravia.prototype.getApplicationList = function() {
+  var deferred = Q.defer();
+
+  var self = this;
+  this.discovery.getUrl().then(function(url) {
+    self.auth.getCookie().then(function(cookie) {
+      var json = {
+       'id': 2,
+       'method': 'getApplicationList',
+       'version': '1.0',
+       'params': []
+      };
+      jsonRequest(url + '/appControl', json, cookie, self.auth).then(function(response) {
+        if (response.result !== undefined) {
+          deferred.resolve(response.result[0]);
+        } else {
+          deferred.reject(response.error);
+        }
+      }, deferred.reject);
+    }, deferred.reject);
+  }, deferred.reject);
+
+  return deferred.promise;
+};
+
+Bravia.prototype.setActiveApp = function(appUri) {
+  var deferred = Q.defer();
+
+  var self = this;
+  this.discovery.getUrl().then(function(url) {
+    self.auth.getCookie().then(function(cookie) {
+      var json = {
+       'id': 2,
+       'method': 'setActiveApp',
+       'version': '1.0',
+       'params': [{
+         'uri': appUri
+       }]
+      };
+      jsonRequest(url + '/appControl', json, cookie, self.auth).then(function(response) {
+        if (response.result !== undefined) {
+          deferred.resolve();
+        } else {
+          deferred.reject(response.error);
+        }
+      }, deferred.reject);
+    }, deferred.reject);
+  }, deferred.reject);
+
+  return deferred.promise;
+};
+
 Bravia.prototype.getVolumeInformation = function() {
   var deferred = Q.defer();
 

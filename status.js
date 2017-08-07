@@ -5,6 +5,8 @@ var deferred;
 
 if (process.argv[2] == 'playing') {
   deferred = bravia.getPlayingContentInfo();
+} else if (process.argv[2] == 'apps') {
+  deferred = bravia.getApplicationList();
 } else if (process.argv[2] == 'volume') {
   deferred = bravia.getVolumeInformation();
 } else {
