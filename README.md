@@ -5,7 +5,8 @@ Node.js module for controlling Sony BRAVIA Android TV (tested with KDL65W850C)
 
 The code is inspired by [alanreid/bravia](https://github.com/alanreid/bravia)
 and borrows structure from [ttu/node-yamaha-avr](https://github.com/ttu/node-yamaha-avr).
-Support for additional status commands inspired by [aparraga/braviarc](https://github.com/aparraga/braviarc).
+Support for additional status commands inspired by [aparraga/braviarc](https://github.com/aparraga/braviarc)
+and [breunigs/bravia-auth-and-remote](https://github.com/breunigs/bravia-auth-and-remote/blob/master/commands).
 
 Note that this model does not support Wake-On-LAN for power on, you send it a
 `WakeUP` command over HTTP instead. Thanks to Michael Tout on this
