@@ -76,6 +76,25 @@ Bravia.prototype.getVolumeInformation = function() {
   return deferred.promise;
 };
 
+Bravia.prototype.setAudioMute = function(mute) {
+  var deferred = Q.defer();
+
+  var self = this;
+  this.discovery.getUrl().then(function(url) {
+    self.auth.getCookie().then(function(cookie) {
+      setAudioMute(url, cookie, mute, self.auth).then(function(response) {
+        if (response.result !== undefined) {
+          deferred.resolve();
+        } else {
+          deferred.reject(response.error);
+        }
+      }, deferred.reject);
+    }, deferred.reject);
+  }, deferred.reject);
+
+  return deferred.promise;
+};
+
 Bravia.prototype.setAudioVolume = function(volume) {
   var deferred = Q.defer();
 
@@ -167,6 +186,21 @@ function getVolumeInformation(url, cookie, auth) {
    'method': 'getVolumeInformation',
    'version': '1.0',
    'params': []
+  };
+
+  return jsonRequest(url + '/audio', json, cookie, auth);
+}
+
+function setAudioMute(url, cookie, mute, auth) {
+  var json = {
+   'id': 2,
+   'method': 'setAudioMute',
+   'version': '1.0',
+   'params': [
+     {
+       'status': mute
+     }
+   ]
   };
 
   return jsonRequest(url + '/audio', json, cookie, auth);
