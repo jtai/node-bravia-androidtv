@@ -23,7 +23,13 @@ Bravia.prototype.getPowerStatus = function() {
   var self = this;
   this.discovery.getUrl().then(function(url) {
     self.auth.getCookie().then(function(cookie) {
-      getPowerStatus(url, cookie, self.auth).then(function(response) {
+      var json = {
+       'id': 2,
+       'method': 'getPowerStatus',
+       'version': '1.0',
+       'params': []
+      };
+      jsonRequest(url + '/system', json, cookie, self.auth).then(function(response) {
         if (response.result !== undefined) {
           deferred.resolve(response.result[0].status);
         } else {
@@ -42,7 +48,13 @@ Bravia.prototype.getPlayingContentInfo = function() {
   var self = this;
   this.discovery.getUrl().then(function(url) {
     self.auth.getCookie().then(function(cookie) {
-      getPlayingContentInfo(url, cookie, self.auth).then(function(response) {
+      var json = {
+       'id': 2,
+       'method': 'getPlayingContentInfo',
+       'version': '1.0',
+       'params': []
+      };
+      jsonRequest(url + '/avContent', json, cookie, self.auth).then(function(response) {
         if (response.result !== undefined) {
           deferred.resolve(response.result[0]);
         } else {
@@ -61,7 +73,14 @@ Bravia.prototype.getVolumeInformation = function() {
   var self = this;
   this.discovery.getUrl().then(function(url) {
     self.auth.getCookie().then(function(cookie) {
-      getVolumeInformation(url, cookie, self.auth).then(function(response) {
+      var json = {
+       'id': 2,
+       'method': 'getVolumeInformation',
+       'version': '1.0',
+       'params': []
+      };
+
+      jsonRequest(url + '/audio', json, cookie, self.auth).then(function(response) {
         if (response.result !== undefined) {
           deferred.resolve(response.result[0].find(function(info) {
             return info.target == 'speaker';
@@ -82,7 +101,15 @@ Bravia.prototype.setAudioMute = function(mute) {
   var self = this;
   this.discovery.getUrl().then(function(url) {
     self.auth.getCookie().then(function(cookie) {
-      setAudioMute(url, cookie, mute, self.auth).then(function(response) {
+      var json = {
+       'id': 2,
+       'method': 'setAudioMute',
+       'version': '1.0',
+       'params': [{
+         'status': mute
+       }]
+      };
+      jsonRequest(url + '/audio', json, cookie, self.auth).then(function(response) {
         if (response.result !== undefined) {
           deferred.resolve();
         } else {
@@ -101,7 +128,16 @@ Bravia.prototype.setAudioVolume = function(volume) {
   var self = this;
   this.discovery.getUrl().then(function(url) {
     self.auth.getCookie().then(function(cookie) {
-      setAudioVolume(url, cookie, volume, self.auth).then(function(response) {
+      var json = {
+       'id': 2,
+       'method': 'setAudioVolume',
+       'version': '1.0',
+       'params': [{
+         'target': 'speaker',
+         'volume': volume.toString()
+       }]
+      };
+      jsonRequest(url + '/audio', json, cookie, self.auth).then(function(response) {
         if (response.result !== undefined) {
           deferred.resolve();
         } else {
@@ -123,7 +159,13 @@ Bravia.prototype.getCommands = function() {
     var self = this;
     this.discovery.getUrl().then(function(url) {
       self.auth.getCookie().then(function(cookie) {
-        getRemoteControllerInfo(url, cookie, self.auth).then(function(response) {
+        var json = {
+         'id': 2,
+         'method': 'getRemoteControllerInfo',
+         'version': '1.0',
+         'params': []
+        };
+        jsonRequest(url + '/system', json, cookie, self.auth).then(function(response) {
           if (response && response.result !== undefined) {
             self.commands = response.result[1].reduce(function(commands, command) {
               commands[command.name] = command.value;
@@ -157,81 +199,6 @@ Bravia.prototype.sendCommand = function(command) {
 
   return deferred.promise;
 };
-
-function getPowerStatus(url, cookie, auth) {
-  var json = {
-   'id': 2,
-   'method': 'getPowerStatus',
-   'version': '1.0',
-   'params': []
-  };
-
-  return jsonRequest(url + '/system', json, cookie, auth);
-}
-
-function getPlayingContentInfo(url, cookie, auth) {
-  var json = {
-   'id': 2,
-   'method': 'getPlayingContentInfo',
-   'version': '1.0',
-   'params': []
-  };
-
-  return jsonRequest(url + '/avContent', json, cookie, auth);
-}
-
-function getVolumeInformation(url, cookie, auth) {
-  var json = {
-   'id': 2,
-   'method': 'getVolumeInformation',
-   'version': '1.0',
-   'params': []
-  };
-
-  return jsonRequest(url + '/audio', json, cookie, auth);
-}
-
-function setAudioMute(url, cookie, mute, auth) {
-  var json = {
-   'id': 2,
-   'method': 'setAudioMute',
-   'version': '1.0',
-   'params': [
-     {
-       'status': mute
-     }
-   ]
-  };
-
-  return jsonRequest(url + '/audio', json, cookie, auth);
-}
-
-function setAudioVolume(url, cookie, volume, auth) {
-  var json = {
-   'id': 2,
-   'method': 'setAudioVolume',
-   'version': '1.0',
-   'params': [
-     {
-       'target': 'speaker',
-       'volume': volume.toString()
-     }
-   ]
-  };
-
-  return jsonRequest(url + '/audio', json, cookie, auth);
-}
-
-function getRemoteControllerInfo(url, cookie, auth) {
-  var json = {
-   'id': 2,
-   'method': 'getRemoteControllerInfo',
-   'version': '1.0',
-   'params': []
-  };
-
-  return jsonRequest(url + '/system', json, cookie, auth);
-}
 
 function sendCommandCode(url, cookie, code, auth) {
   var deferred = Q.defer();
